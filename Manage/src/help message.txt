@@ -1,0 +1,33 @@
+usage:
+	./manage arguments
+	Arguments are mainly tasks that the program should do.
+	Like here:
+		./manage bi
+		Which builds whole project and creates disk image out of it.
+	It's possible to add some flags to configure tasks:
+		./manage b[release]i
+		Which will build project in release mode (More optimized build), and then create disk image normally.
+		In square brackets you can put flags and values for each task.
+	You can also set values for tasks:
+		./manage r[memory=1GIB]
+		Which runs built project in Qemu with 1 GIB of memory.
+	It's also possible to configure some more generic things:
+		./manage g[abort=end.task]bir
+		In which, if building project fails, it will abort current task and go to another, and so on.
+		"g" here does nothing more than symbol for configuration
+tasks:
+	h	Display this help message.
+	b	Build whole project.
+	i	Create disk image of the os (in `target/disk.img` by default).
+	r	Run project in Qemu.
+	g	General configuration. Does nothing more than thing for configuring general settings.
+tips:
+	Tasks are ran in order you wrote them, so if you would write something like this:
+	./manage rib
+	Then it will start qemu with old disk image, then create disk image with old builds and lastly will build workspace.
+	So it wouldn't make sense.
+	Also, you can run tasks twice, for example:
+	./manage g[arch=i538]i[file=dev.x86.img]b[release,arch=x86_64]i[file=release.x86_64.img]r
+	It looks gross but what it does is:
+		build project for i586 and create disk image in `dev.x86.img` file,
+		build project for x86_64, create disk image in `release.x86_64.img` file and run it in qemu.

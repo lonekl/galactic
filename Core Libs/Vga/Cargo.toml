@@ -1,0 +1,9 @@
+[package]
+name = "vga"
+version = "0.1.0"
+edition = "2021"
+description = "video graphics adapter driver"
+
+[dependencies]
+x86_64 = {path = "../X86_64" }
+algorithms = {path = "../Algorithms" }

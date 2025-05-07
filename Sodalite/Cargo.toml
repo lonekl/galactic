@@ -1,0 +1,13 @@
+[package]
+name = "sodalite"
+version = "0.1.0"
+edition = "2021"
+description = "Systems bootloader, currently test os."
+
+[lib]
+crate-type = ["staticlib"]
+
+[dependencies]
+x86_64 = {path = "../Core Libs/X86_64" }
+algorithms = {path = "../Core Libs/Algorithms" }
+vga = {path = "../Core Libs/Vga" }

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if cargo build --profile manage-release -p manage; then
+
+    if ! [ -e manage ]; then
+        ln -s target/manage-release/manage manage
+    else
+        if ! [ -h manage ]; then
+            echo "\`./manage\` should be a symbolic link to target/manage-release/manage. But it isn't. Try removing it."
+        fi
+    fi
+
+fi

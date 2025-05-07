@@ -1,0 +1,31 @@
+[workspace]
+resolver = "2"
+members = [
+    "Manage",
+    "Sodalite",
+    "Core Libs/X86_64",
+    "Core Libs/Algorithms",
+    "Core Libs/Vga",
+]
+
+[profile.manage-release]
+inherits = "release"
+opt-level = "s"
+strip = "symbols"
+lto = true
+
+[profile.core-dev]
+inherits = "dev"
+overflow-checks = false
+opt-level = 1
+strip = "symbols"
+panic = "abort"
+lto = true
+
+[profile.core-release]
+inherits = "release"
+codegen-units = 1
+opt-level = "s"
+strip = "symbols"
+panic = "abort"
+lto = true
