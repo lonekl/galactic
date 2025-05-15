@@ -2,8 +2,8 @@
 name = "ps2"
 version = "0.1.0"
 edition = "2021"
-description = "driver for ps/2 keyboards and mouse"
+description = "Driver for PS/2 keyboard and mouse."
 
 [dependencies]
-x86_64 = {path = "../X86_64" }
-algorithms = {path = "../Algorithms" }
+x86_64 = { path = "../X86_64" }
+algorithms = { path = "../Algorithms" }
