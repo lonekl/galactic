@@ -46,25 +46,25 @@ impl< Delay: DriverDelay> Display for VgaDisplay< Delay> {
 /// Bindings to Vga.
 pub struct VgaDevice< Delay: DriverDelay> {
 
-    wait: Delay,
+	wait: Delay,
 
 }
 
 impl< Wait: DriverDelay> VgaDevice< Wait> {
 
-    pub const fn new( wait: Wait) -> Self {
+	pub const fn new( wait: Wait) -> Self {
 
-        Self {
-            wait,
-        }
-    }
+		Self {
+			wait,
+		}
+	}
 
-    pub unsafe fn set_color_palette( &mut self, start_index: u8, palette: &[ VgaColor]) {
-        let raw_palette = unsafe { core::mem::transmute( palette)}; // By transmute is only way I see it would go.
+	pub unsafe fn set_color_palette( &mut self, start_index: u8, palette: &[ VgaColor]) {
+		let raw_palette = unsafe { core::mem::transmute( palette)}; // By transmute is only way I see it would go, fastly enough at least.
 
-        registers::write_dac( start_index, raw_palette, &mut self.wait);
+		registers::write_dac( start_index, raw_palette, &mut self.wait);
 
-    }
+	}
 
 }
 
@@ -73,9 +73,9 @@ impl< Wait: DriverDelay> VgaDevice< Wait> {
 #[ derive( Clone, Copy)]
 pub enum VgaMode {
 
-    Graphic640x480x4,
-    Graphic320x240x8,
-    Unknown,
+	Graphic640x480x4,
+	Graphic320x240x8,
+	Unknown,
 
 }
 
@@ -85,60 +85,60 @@ pub enum VgaMode {
 #[ repr( C, packed)]
 pub struct VgaColor {
 
-    r: u8,
-    g: u8,
-    b: u8,
+	r: u8,
+	g: u8,
+	b: u8,
 
 }
 
 impl VgaColor {
 
-    pub const fn new( r: u8, g: u8, b: u8) -> Option< Self> {
+	pub const fn new( r: u8, g: u8, b: u8) -> Option< Self> {
 
-        if
-        r & 0b11000000 != 0
-            ||
-            g & 0b11000000 != 0
-            ||
-            b & 0b11000000 != 0
-        {
-            return None;
-        }
+		if
+			r & 0b11000000 != 0
+			||
+			g & 0b11000000 != 0
+			||
+			b & 0b11000000 != 0
+		{
+			return None;
+		}
 
-        Some( Self { r, g, b })
-    }
+			Some( Self { r, g, b })
+	}
 
 }
 
 impl Into< [u8; 3]> for VgaColor {
-    fn into( self) -> [ u8; 3] {
+	fn into( self) -> [ u8; 3] {
 
-        [
-            self.r,
-            self.g,
-            self.b,
-        ]
-    }
+		[
+			self.r,
+			self.g,
+			self.b,
+		]
+	}
 }
 
 impl Into< VgaColor> for Rgb8 {
-    fn into( self) -> VgaColor {
+	fn into( self) -> VgaColor {
 
-        VgaColor {
-            r: self.r >> 2,
-            g: self.g >> 2,
-            b: self.b >> 2,
-        }
-    }
+		VgaColor {
+			r: self.r >> 2,
+			g: self.g >> 2,
+			b: self.b >> 2,
+		}
+	}
 }
 
 impl Into< Rgb8> for VgaColor {
-    fn into( self) -> Rgb8 {
+	fn into( self) -> Rgb8 {
 
-        Rgb8::new(
-            self.r << 2,
-            self.g << 2,
-            self.b << 2,
-        )
-    }
+		Rgb8::new(
+			self.r << 2,
+			self.g << 2,
+			self.b << 2,
+		)
+	}
 }
