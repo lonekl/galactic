@@ -49,9 +49,9 @@ impl<
 	}
 
 
-	pub fn image_painter( &'a mut self) -> &'a ImageBufferPainter< 'a, Pixel> {
+	pub fn image_painter( &'a mut self) -> &'a mut ImageBufferPainter< 'a, Pixel> {
 
-		&self.image_painter
+		&mut self.image_painter
 	}
 
 }
