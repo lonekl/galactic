@@ -4,7 +4,7 @@
 #![ feature( const_trait_impl)]
 
 use algorithms::sync::DriverDelay;
-use algorithms::video::color::Rgb8;
+use algorithms::video::color::{ ColorDraw, Rgb8};
 use algorithms::video::{ Display, ImageBufferPainter};
 use algorithms::video::mode::{ Resolution, Resolutions};
 
@@ -66,8 +66,8 @@ impl< Wait: DriverDelay> VgaDevice< Wait> {
 		}
 	}
 
-	pub unsafe fn set_color_palette( &mut self, start_index: u8, palette: &[ VgaColor]) {
-		let raw_palette = unsafe { core::mem::transmute( palette)}; // By transmute is only way I see it would go, fastly enough at least.
+	pub unsafe fn set_color_palette( &mut self, start_index: u8, palette: &[ VgaPaletteColor]) {
+		let raw_palette = unsafe { core::mem::transmute( palette) }; // By transmute is only way I see it would go, fastly enough at least.
 
 		register_access::write_dac( start_index, raw_palette, &mut self.wait);
 
@@ -90,7 +90,7 @@ pub enum VgaMode {
 
 #[ derive( Clone, Copy)]
 #[ repr( C, packed)]
-pub struct VgaColor {
+pub struct VgaPaletteColor {
 
 	r: u8,
 	g: u8,
@@ -98,7 +98,7 @@ pub struct VgaColor {
 
 }
 
-impl VgaColor {
+impl VgaPaletteColor {
 
 	pub const fn new( r: u8, g: u8, b: u8) -> Option< Self> {
 
@@ -117,7 +117,7 @@ impl VgaColor {
 
 }
 
-impl Into< [u8; 3]> for VgaColor {
+impl Into< [u8; 3]> for VgaPaletteColor {
 	fn into( self) -> [ u8; 3] {
 
 		[
@@ -128,10 +128,10 @@ impl Into< [u8; 3]> for VgaColor {
 	}
 }
 
-impl Into< VgaColor> for Rgb8 {
-	fn into( self) -> VgaColor {
+impl Into< VgaPaletteColor> for Rgb8 {
+	fn into( self) -> VgaPaletteColor {
 
-		VgaColor {
+		VgaPaletteColor {
 			r: self.r >> 2,
 			g: self.g >> 2,
 			b: self.b >> 2,
@@ -139,7 +139,7 @@ impl Into< VgaColor> for Rgb8 {
 	}
 }
 
-impl Into< Rgb8> for VgaColor {
+impl Into< Rgb8> for VgaPaletteColor {
 	fn into( self) -> Rgb8 {
 
 		Rgb8::new(
@@ -148,4 +148,67 @@ impl Into< Rgb8> for VgaColor {
 			self.b << 2,
 		)
 	}
+}
+
+
+
+
+#[ derive( Clone, Copy)]
+pub struct Vga4Color ( u8);
+
+impl Vga4Color {
+
+	pub fn new( value: u8) -> Self {
+
+		if value & 0b11110000 != 0 {
+			panic!( "Vga4Color value is not 4-bit compatble.");
+		}
+
+		Self ( value)
+	}
+
+}
+
+impl ColorDraw< Vga4Color> for Vga4Color {
+
+	fn draw_over( &self, origin: &mut Vga4Color) {
+
+		*origin = *self;
+
+	}
+
+}
+
+impl ColorDraw< Vga8Color> for Vga4Color {
+
+	fn draw_over( &self, origin: &mut Vga8Color) {
+
+		origin.0 = self.0;
+
+	}
+
+}
+
+
+
+#[ derive( Clone, Copy)]
+pub struct Vga8Color ( u8);
+
+impl Vga8Color {
+
+	pub fn new( value: u8) -> Self {
+
+		Self ( value)
+	}
+
+}
+
+impl ColorDraw< Vga8Color> for Vga8Color {
+
+	fn draw_over( &self, origin: &mut Vga8Color) {
+
+		*origin = *self;
+
+	}
+
 }
