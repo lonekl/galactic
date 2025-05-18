@@ -1,15 +1,15 @@
 use core::convert::Into;
-use algorithms::video::color::Rgb8;
-use vga::{ VgaDevice};
+use algorithms::video::{ Display, ImageBufferPainter, color::Rgb8};
+use vga::{ VgaDisplay};
 use x86_64::SerialPortWait;
 
-pub static mut VGA: VgaDevice< SerialPortWait> = VgaDevice::new( SerialPortWait::new());
+pub static mut VGA: VgaDisplay< SerialPortWait> = VgaDisplay::new( SerialPortWait::new());
 
 //const DEFAULT_PALETTE: &[VgaColor; 16] = ;
 
 pub unsafe fn initialize() {
 
-	VGA.set_color_palette( 0, &[
+	VGA.device.set_color_palette( 0, &[
 		Rgb8::new(  66,  56, 180).into(), // 0000 Blue, background.
 		Rgb8::new(   0,   0,   0).into(), // 0001 Black nigger.
 		Rgb8::new(   9, 160,  89).into(),	// 0010 Dark green.
@@ -27,5 +27,10 @@ pub unsafe fn initialize() {
 		Rgb8::new( 255, 235, 129).into(), // 1110 Yellow, quote string.
 		Rgb8::new( 191, 233, 253).into(), // 1111 Light cyan, highlight foreground.
 	]);
+
+	let mut screen_buffer = algorithms::video::ConstSizeImageBuffer::< Rgb8, 640, 400>::new( Rgb8::new( 9, 160, 89));
+	let screen_painter: &mut ImageBufferPainter< Rgb8> = screen_buffer.image_painter();
+	screen_painter.draw_pixel( Rgb8::new( 6, 150, 106), 10, 10);
+	VGA.draw( screen_painter);
 
 }
