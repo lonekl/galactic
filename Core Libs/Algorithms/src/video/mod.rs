@@ -8,7 +8,7 @@ pub mod mode;
 
 pub trait Display {
 
-	fn draw( &mut self, a: ImageBufferPainter< Rgb8>);
+	fn draw( &mut self, a: &ImageBufferPainter< Rgb8>);
 	fn available_resolutions( &self) -> Resolutions;
 
 }
