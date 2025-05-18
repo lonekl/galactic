@@ -17,16 +17,23 @@ pub mod register_access;
 pub struct VgaDisplay< Delay: DriverDelay> {
 
 	#[ allow( dead_code)]
-	device: VgaDevice< Delay>,
+	pub device: VgaDevice< Delay>,
 
 }
 
 impl< Delay: DriverDelay> VgaDisplay< Delay> {
 
+	pub const fn new(wait: Delay) -> Self {
+
+		Self {
+			device: VgaDevice::< Delay>::new( wait),
+		}
+	}
+
 }
 
 impl< Delay: DriverDelay> Display for VgaDisplay< Delay> {
-	fn draw( &mut self, _a: ImageBufferPainter< Rgb8>) {
+	fn draw( &mut self, _a: &ImageBufferPainter< Rgb8>) {
 
 
 	}
