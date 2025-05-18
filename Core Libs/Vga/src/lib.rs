@@ -9,7 +9,7 @@ use algorithms::video::{ Display, ImageBufferPainter};
 use algorithms::video::mode::{ Resolution, Resolutions};
 
 pub mod screen;
-pub mod registers;
+pub mod register_access;
 
 
 
@@ -62,7 +62,7 @@ impl< Wait: DriverDelay> VgaDevice< Wait> {
 	pub unsafe fn set_color_palette( &mut self, start_index: u8, palette: &[ VgaColor]) {
 		let raw_palette = unsafe { core::mem::transmute( palette)}; // By transmute is only way I see it would go, fastly enough at least.
 
-		registers::write_dac( start_index, raw_palette, &mut self.wait);
+		register_access::write_dac( start_index, raw_palette, &mut self.wait);
 
 	}
 
