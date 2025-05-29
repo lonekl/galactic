@@ -55,6 +55,8 @@ pub struct VgaDevice< Delay: DriverDelay> {
 
 	wait: Delay,
 
+	mode: VgaMode,
+
 }
 
 impl< Wait: DriverDelay> VgaDevice< Wait> {
@@ -63,6 +65,7 @@ impl< Wait: DriverDelay> VgaDevice< Wait> {
 
 		Self {
 			wait,
+			mode: VgaMode::Unknown,
 		}
 	}
 
@@ -83,6 +86,22 @@ pub enum VgaMode {
 	Graphic640x480x4,
 	Graphic320x240x8,
 	Unknown,
+
+}
+
+impl VgaMode {
+
+	pub unsafe fn set_mode< Delay: DriverDelay>( self, delay: &mut Delay) {
+
+		register_access::write_graphics_indexed( 0x6, 0b0001, delay);
+
+		match self {
+			Self::Graphic640x480x4 => {},
+			Self::Graphic320x240x8 => {},
+			Self::Unknown => panic!( "Vga mode should be defined."),
+		}
+
+	}
 
 }
 
@@ -161,7 +180,7 @@ impl Vga4Color {
 	pub fn new( value: u8) -> Self {
 
 		if value & 0b11110000 != 0 {
-			panic!( "Vga4Color value is not 4-bit compatble.");
+			panic!( "Vga4Color value is not 4-bit compatible.");
 		}
 
 		Self ( value)
