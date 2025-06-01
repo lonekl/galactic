@@ -55,6 +55,7 @@ pub struct VgaDevice< Delay: DriverDelay> {
 
 	wait: Delay,
 
+	#[ allow( dead_code)]
 	mode: VgaMode,
 
 }
