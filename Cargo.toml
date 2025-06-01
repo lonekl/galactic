@@ -17,7 +17,8 @@ lto = true
 [profile.core-dev]
 inherits = "dev"
 overflow-checks = false
-opt-level = 1
+# TODO Track back, why lower optimilisations fail.
+opt-level = 2
 strip = "symbols"
 panic = "abort"
 lto = true
