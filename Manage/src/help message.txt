@@ -6,12 +6,23 @@ usage:
 		Which simply builds project, and packs it into a disk image.
 		./manage b[release]ir
 		Which builds project with maximum optimalisations, again, packs it into a disk image, and then starts optimilised build in qemu.
-		./manage g[abort=end.task]r[memory=1GIB]
+		./manage g[abort=end task]r[memory=1GIB]
 		That time 'g' is used, it isn't normal task, it's a way to set more generic values. Abort option with „end.task” value tells to jump on another task, after current one fails.
 		'r' runs, by default – development build in qemu, with 1 GIB memory assigned.
 tasks:
-	h	Display this help message.
-	b	Build whole project.
-	i	Pack built project onto a disk image – in `target/disk.img` by default.
-	r	Run project in Qemu.
-	g	Generic – is not regular task, used for unspecified configuration.
+	h – Display this help message. Can be used only once, and alone.
+	b – Build whole project.
+		release – Build project for everyday used, optimalised.
+		arch=*  – Chose architecture for which project is going to be build.
+		          Note, that it will affect next tasks.
+		          Possible values are: x86_64.
+	i – Pack built project onto a disk image – in `target/disk.img` by default.
+		size=SIZE         – Size of disk image to spit out. Default is 4MIB.
+		partition table=* – Partition table to create image with.
+		                    Possible values are: mbr.
+		release           – Whenever to burn optimised built.
+		arch=*            – Chose architecture of build to burn.
+	r – Run project in Qemu.
+		memory=SIZE – Size of random access memory, default is 64MIB.
+		arch=*      – Architecture to run.
+	g – Generic – is not regular task, used for general configuration.
