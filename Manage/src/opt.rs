@@ -26,7 +26,7 @@ impl Opt {
 		}
 		let mut argument_state = ArgState::Task;
 		let mut tasks = Vec::new();
-		let mut current_task = Task::Generic;
+		let mut current_task = Task::EMPTY_GENERIC;
 		let mut flag_name = String::new();
 		let mut flag_value = String::new();
 		let mut errors = Vec::new();
@@ -60,7 +60,7 @@ impl Opt {
 							'b' => { current_task = Task::Build { release: false, arch }; release = false; },
 							'i' => current_task = Task::Image { size: 1024 * 1024 * 4, partition_table: PartitionTable::Mbr, arch, release },
 							'r' => current_task = Task::RunQemu { memory: 1024 * 1024 * 64, arch },
-							'g' => current_task = Task::Generic,
+							'g' => current_task = Task::EMPTY_GENERIC,
 							'[' => argument_state = ArgState::Config { flag_part: false },
 							' ' => {},
 							_ => errors.push( format!( "There is no such task as \'{arg_char}\'.")),
@@ -113,7 +113,19 @@ impl Opt {
 
 									Task::Image { size: _image_size, partition_table: _image_partition_table, arch: _image_arch, release: _image_release } => {},
 									Task::RunQemu { memory: _run_memory, arch: _run_arch } => {},
-									Task::Generic => {},
+									Task::Generic { abort_level } => match flag_name.as_str() {
+										"abort" => if *flag_part {
+											match AbortLevel::from_flag_value( &flag_value) {
+												Some( v) => {
+													*abort_level = Some( v);
+												},
+												None => errors.push( format!( "Generic task: \"{flag_value}\" abort hint is invalid.")),
+											}
+										} else {
+											errors.push( format!( "Generic task: \"abort\" flag should contain a value."));
+										}
+										_ => errors.push( format!( "Generic task: \"{flag_name}\" is not an accepted flag.")),
+									},
 								}
 
 							}
@@ -126,7 +138,7 @@ impl Opt {
 
 								argument_state = ArgState::Task;
 								tasks.push( current_task);
-								current_task = Task::Generic;
+								current_task = Task::EMPTY_GENERIC;
 
 							}
 
@@ -174,7 +186,9 @@ impl Opt {
 pub enum Task {
 
 	/// Makes parsing of arguments easier.
-	Generic,
+	Generic {
+		abort_level: Option< AbortLevel>
+	},
 	Help,
 	Build {
 		release: bool,
@@ -192,6 +206,14 @@ pub enum Task {
 	},
 
 }
+
+impl Task {
+
+	const EMPTY_GENERIC: Self = Self::Generic { abort_level: None };
+
+}
+
+
 
 #[ derive( Clone, Copy)]
 pub enum Arch {
@@ -263,6 +285,9 @@ impl Arch {
 
 }
 
+
+
+#[ derive( Clone, Copy)]
 pub enum AbortLevel {
 
 	/// Error aborts everything.
@@ -277,6 +302,17 @@ pub enum AbortLevel {
 }
 
 impl AbortLevel {
+
+	pub fn from_flag_value( value: &str) -> Option< Self> {
+
+		match value {
+			"all"   => Some( Self::FailAll),
+			"task"  => Some( Self::FailTask),
+			"rest"  => Some( Self::FinishTask),
+			"never" => Some( Self::None),
+			_       => None,
+		}
+	}
 
 	pub fn abort_control( &self, continue_afterwards: &mut bool) -> AbortControl {
 

@@ -236,7 +236,7 @@ fn main() {
 				} {
 					exit( 1)
 				},
-					Task::Generic => {}
+					Task::Generic { abort_level } => drop( abort_level.inspect( |v| opt.abort_level = *v)),
 			}
 
 		if !cont {
