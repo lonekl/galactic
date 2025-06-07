@@ -46,7 +46,7 @@ impl Opt {
 		let mut release = false;
 
 		for mut arg in env::args().skip( 1) {
-			arg.push(' ');
+			arg.push( ' ');
 			for arg_char in arg.chars() {
 
 				match &mut argument_state {
