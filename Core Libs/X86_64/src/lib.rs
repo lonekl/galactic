@@ -101,8 +101,12 @@ impl ChainedPics {
 		}
 	}
 
-	/// Irq value must be under 16 or it will output wrong value.
+	/// Irq value must not exceed `15`.
 	pub const fn irq_index( &self, irq: u8) -> u8 {
+
+		if irq > 15 {
+			panic!( "Irq index greater than 15.")
+		}
 
 		let index = if irq >= 8 {
 			self.master.irq_offset + irq
@@ -149,6 +153,7 @@ impl ChainedPics {
 
 	}
 
+	/// Here, it is not expected to for us to come up with a value greater than 15.
 	pub unsafe fn end_of_interrupt( &self, irq: u8) {
 
 		if irq >= 8 {
