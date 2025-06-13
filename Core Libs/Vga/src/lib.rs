@@ -62,7 +62,9 @@ pub struct VgaDevice< Delay: DriverDelay> {
 
 impl< Wait: DriverDelay> VgaDevice< Wait> {
 
-	pub const fn new( wait: Wait) -> Self {
+	pub const fn new( mut wait: Wait) -> Self {
+
+		wait.increment_delay();
 
 		Self {
 			wait,
