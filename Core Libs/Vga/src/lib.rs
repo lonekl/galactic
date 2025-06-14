@@ -64,8 +64,6 @@ impl< Wait: DriverDelay> VgaDevice< Wait> {
 
 	pub const fn new( mut wait: Wait) -> Self {
 
-		wait.increment_delay();
-
 		Self {
 			wait,
 			mode: VgaMode::Unknown,
