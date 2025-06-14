@@ -48,8 +48,8 @@ pub mod gdf {
 			| GRANULARITY
 	);
 
-	pub const KERNEL_CODE: u64 = MINIMAL | EXECUTABLE | LONG_MODE;
-	pub const KERNEL_DATA: u64 = MINIMAL | WRITABLE | COMPATIBILITY_MODE;
+	pub const KERNEL_CODE: u64 = MINIMAL | RING_0 | EXECUTABLE | LONG_MODE;
+	pub const KERNEL_DATA: u64 = MINIMAL | RING_0 | WRITABLE | COMPATIBILITY_MODE;
 
 }
 
@@ -81,7 +81,7 @@ impl Gdt {
 		Segment::new( index as u16, desc)
 	}
 
-	pub const fn push_sys_seg( &mut self, desc0: u64, desc1: u64) -> Segment {
+	pub const fn push_system_segment( &mut self, desc0: u64, desc1: u64) -> Segment {
 		let segment = self.push( desc0);
 		let _ = self.push( desc1);
 
@@ -97,7 +97,7 @@ impl Gdt {
 		desc0 |= ( size_of::< Tss>() - 1) as u64 & 0b1111111111111111;
 		desc0 |= 0b1001 << 40;
 
-		self.push_sys_seg( desc0, desc1)
+		self.push_system_segment( desc0, desc1)
 	}
 
 	pub unsafe fn load( &'static self) {
